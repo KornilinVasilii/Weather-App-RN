@@ -11,7 +11,6 @@ const WeatherInfo = ({ weatherData, fectWeatherData }) => {
   // } = weatherData;
   return (
     <View style={styles.weatherOtherInfo}>
-      <SearchWeather fectWeatherData={fectWeatherData} />
       <View style={styles.infoWrapper}>
         <Fontisto
           style={{ textAlign: "center" }}
