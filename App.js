@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet,ScrollView } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import * as Location from "expo-location";
-import { Fontisto } from "@expo/vector-icons"; 
-import { Entypo } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons"; 
-import { SimpleLineIcons } from "@expo/vector-icons"; 
-import { AntDesign } from "@expo/vector-icons";
-import Form from "./Form";
+import WeatherInfo from "./components/WeatherInfo";
+import DailyForecast from "./components/DailyForecast";
+import CurrentWeather from "./components/CurrentWeather";
+import SearchWeather from "./components/SearchWeather";
 
 const API_KEY = "f5a3b96ce3554ad29a583456233005";
-
 
 export default function App() {
   const [location, setLocation] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [loaded, setLoaded] = useState(true);
-
-  //Location get function
-
   useEffect(() => {
+    setLoaded(true);
     const DataLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -27,224 +22,86 @@ export default function App() {
       }
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
+      console.log(location, "tanusree");
     };
+
     DataLocation();
   }, []);
-
-  //Get weather by location function
-  
-  async function fectWeatherData(location) {
+  async function fectWeatherData(cityName) {
     let lat = location.coords.latitude;
-    let lon = location.coords.longitude;
-    // console.log(lat,lon)
+    let long = location.coords.longitude;
+    console.log(lat, long, "qw");
     setLoaded(false);
-    const API = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=London&days=5&aqi=no&alerts=no`;
-
+    const API = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}}&days=5&aqi=no&alerts=no`;
+    console.log(API);
     try {
       const response = await fetch(API);
       if (response.status == 200) {
         const data = await response.json();
-        // console.log(data,'13');
+        console.log(data, "12");
         setWeatherData(data);
       } else {
         setWeatherData(null);
       }
-      setLoaded(loaded);
+      setLoaded(true);
     } catch (error) {
       console.log(error);
     }
   }
   useEffect(() => {
     fectWeatherData(location);
+    console.log(weatherData, "345");
   }, [location]);
 
-  //  console.log(weatherData.forecast.forecastday)
+  // var date = new Date(weatherData.location.localtime);
+  // var options = {
+  //   day: "numeric",
+  //   weekday: "long",
+  //   month: "long",
+  // };
+  // var dayName = date.toLocaleDateString("en-US", options);
+
+  if (!loaded) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator color="grey" size={36} />
+      </View>
+    );
+  }
   return (
     <View style={styles.weatherContainer}>
-      <Form />
-      {/* Location */}
-      <View style={styles.headerContainer}>
-        <SimpleLineIcons name="location-pin" size={20} color="#fff" />
-        <Text style={styles.location}>
-          {weatherData && weatherData.location.name}
-        </Text>
-      </View>
+      <SearchWeather
+        fectWeatherData={fectWeatherData}
+        weatherData={weatherData}
+      />
       {/* Date */}
-      <Text style={styles.date}>
-        {weatherData && weatherData.location.localtime}
-      </Text>
+      {/* <Text style={styles.date}>{dayName}</Text> */}
       {/* current weather */}
-      <View style={styles.currentWeather}>
-        <Text style={styles.tempText}>
-          {weatherData && weatherData.current.temp_c.toFixed()}&#xb0;
-        </Text>
-        <Text style={styles.currentText}>
-          {weatherData && weatherData.current.condition.text}
-        </Text>
-      </View>
+      <CurrentWeather weatherData={weatherData} />
       {/* current weather details */}
-      <View style={styles.weatherOtherInfo}>
-        <View style={styles.infoWrapper}>
-          <Fontisto
-            style={{ textAlign: "center" }}
-            name="wind"
-            size={24}
-            color="#fff"
-          />
-          <Text style={styles.infoWrapperText}>
-            {weatherData && weatherData.current.wind_mph.toFixed()} m/s
-          </Text>
-          <Text style={styles.infoWrapperTitle}>Wind</Text>
-        </View>
-        <View style={styles.infoWrapper}>
-          <Entypo
-            style={{ textAlign: "center" }}
-            name="drop"
-            size={24}
-            color="#fff"
-          />
-          <Text style={styles.infoWrapperText}>
-            {weatherData && weatherData.current.humidity}%
-          </Text>
-          <Text style={styles.infoWrapperTitle}>Humidity</Text>
-        </View>
-        <View style={styles.infoWrapper}>
-          <FontAwesome
-            style={{ textAlign: "center" }}
-            name="thermometer-2"
-            size={24}
-            color="#fff"
-          />
-          <Text style={styles.infoWrapperText}>
-            {weatherData && weatherData.current.feelslike_c}˚
-          </Text>
-          <Text style={styles.infoWrapperTitle}>Feels like</Text>
-        </View>
-      </View>
+      <WeatherInfo
+        weatherData={weatherData}
+        fectWeatherData={fectWeatherData}
+      />
       {/* daily forecast */}
-      <View style={styles.dailyForecast}>
-        <View style={styles.dailyForecastTitle}>
-          <AntDesign name="calendar" size={24} color="#fff" />
-          <Text style={styles.dailyForecastText}>Daily forecast</Text>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {weatherData &&
-            weatherData.forecast.forecastday.map((item, index) => {
-              let date = new Date(item.date);
-              let options = { weekday: "long" };
-              let dayName = date
-                .toLocaleDateString("en-US", options)
-                .split(",")[0];
-              return (
-                <View key={index} style={styles.forecastDay}>
-                  <Text style={{ color: "#fff", fontSize: 18 }}>{dayName}</Text>
-                  <Text style={{ color: "#fff", fontSize: 18 }}>
-                    {item.day.avgtemp_c.toFixed()}˚
-                  </Text>
-                  <Text style={{ color: "#fff", fontSize: 18 }}>
-                    {item.day.condition.text}
-                  </Text>
-                </View>
-              );
-            })}
-        </ScrollView>
-      </View>
+      <DailyForecast weatherData={weatherData} />
     </View>
   );
 }
 const styles = StyleSheet.create({
-  forecastDay: {
-    padding: 15,
-    alignItems: "center",
-    backgroundColor: "#3d3d3d",
-    borderRadius: 18,
-    gap: 3,
-    marginRight: 20,
-  },
-  dailyForecastTitle: {
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  dailyForecastText: {
-    color: "#fff",
-    alignItems: "center",
-  },
-  dailyForecast: {
-    marginBottom: 70,
-  },
-  infoWrapperTitle: {
-    color: "#fff",
-    fontWeight: "200",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  infoWrapperText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
-    marginTop: 8,
-    marginBottom: 6,
-  },
-  weatherOtherInfo: {
-    width: "100%",
-    maxHeight: 120,
-    padding: 20,
-    flex: 1,
-    justifyContent: "space-between",
-    flexDirection: "row",
-    backgroundColor: "#3d3d3d",
-    borderRadius: 18,
-    marginBottom: 40,
-    alignItems: "center",
-  },
-  currentText: {
-    color: "#fff",
-    fontSize: 20,
-  },
-  currentWeatherInfo: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 20,
-  },
-  currentWeather: {
+  container: {
     flex: 1,
     alignItems: "center",
-    marginTop: 65,
-  },
-  location: {
-    color: "#fff",
-    fontSize: 25,
-    fontWeight: "600",
+    justifyContent: "center",
   },
   date: {
     marginTop: 8,
     color: "#fff",
     textAlign: "center",
   },
-  current: {
-    flexDirection: "column",
-    alignItems: "center",
-    alignContent: "center",
-  },
   weatherContainer: {
     flex: 1,
     backgroundColor: "#303030",
     padding: 20,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    marginTop: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  tempText: {
-    fontSize: 120,
-    color: "#ffffff",
-    textAlign: "center",
-    fontWeight: "600",
   },
 });
