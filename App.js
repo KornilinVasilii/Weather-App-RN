@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import * as Location from "expo-location";
 import WeatherInfo from "./components/WeatherInfo";
 import DailyForecast from "./components/DailyForecast";
 import CurrentWeather from "./components/CurrentWeather";
 import SearchWeather from "./components/SearchWeather";
+import HourlyForecast from "./components/HourlyForecast";
 
-const API_KEY = "f5a3b96ce3554ad29a583456233005";
+const API_KEY = "a5dc866cfff24ccb9f293324231506";
 
 export default function App() {
   const [location, setLocation] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [loaded, setLoaded] = useState(true);
+
   useEffect(() => {
+    
     setLoaded(true);
     const DataLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -22,23 +30,24 @@ export default function App() {
       }
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-      console.log(location, "tanusree");
     };
 
     DataLocation();
   }, []);
   async function fectWeatherData(cityName) {
-    let lat = location.coords.latitude;
-    let long = location.coords.longitude;
-    console.log(lat, long, "qw");
+
+    // let lat = location.coords.latitude;
+    // let long = location.coords.longitude;
+
+
     setLoaded(false);
-    const API = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}}&days=5&aqi=no&alerts=no`;
-    console.log(API);
+
+    const API = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}&days=5&aqi=no&alerts=no
+`;
     try {
       const response = await fetch(API);
       if (response.status == 200) {
         const data = await response.json();
-        console.log(data, "12");
         setWeatherData(data);
       } else {
         setWeatherData(null);
@@ -50,16 +59,7 @@ export default function App() {
   }
   useEffect(() => {
     fectWeatherData(location);
-    console.log(weatherData, "345");
   }, [location]);
-
-  // var date = new Date(weatherData.location.localtime);
-  // var options = {
-  //   day: "numeric",
-  //   weekday: "long",
-  //   month: "long",
-  // };
-  // var dayName = date.toLocaleDateString("en-US", options);
 
   if (!loaded) {
     return (
@@ -69,23 +69,28 @@ export default function App() {
     );
   }
   return (
-    <View style={styles.weatherContainer}>
-      <SearchWeather
-        fectWeatherData={fectWeatherData}
-        weatherData={weatherData}
-      />
-      {/* Date */}
-      {/* <Text style={styles.date}>{dayName}</Text> */}
-      {/* current weather */}
-      <CurrentWeather weatherData={weatherData} />
-      {/* current weather details */}
-      <WeatherInfo
-        weatherData={weatherData}
-        fectWeatherData={fectWeatherData}
-      />
-      {/* daily forecast */}
-      <DailyForecast weatherData={weatherData} />
-    </View>
+    <>
+      <View style={styles.weatherContainer}>
+        <SearchWeather
+          fectWeatherData={fectWeatherData}
+          weatherData={weatherData}
+        />
+        <ScrollView vertical showsVerticalScrollIndicator={false}>
+          {/* current weather */}
+          <CurrentWeather weatherData={weatherData} />
+          {/* current weather details */}
+
+          <WeatherInfo
+            weatherData={weatherData}
+           
+          />
+          <HourlyForecast weatherData={weatherData} />
+          {/* daily forecast */}
+          <DailyForecast weatherData={weatherData} />
+          {/* </View> */}
+        </ScrollView>
+      </View>
+    </>
   );
 }
 const styles = StyleSheet.create({

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    
   },
   input: {
     backgroundColor: "#8c8c8c",
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     borderRadius: 18,
     color: "#fff",
+    
   },
   button: {},
 });

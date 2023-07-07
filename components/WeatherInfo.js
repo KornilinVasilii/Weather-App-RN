@@ -1,14 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Fontisto } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
+import { Fontisto, Entypo, FontAwesome } from "@expo/vector-icons";
 import React from "react";
-import SearchWeather from "./SearchWeather";
 
-const WeatherInfo = ({ weatherData, fectWeatherData }) => {
-  // const {
-  //   current: { humidity },
-  // } = weatherData;
+const WeatherInfo = ({ weatherData}) => {
   return (
     <View style={styles.weatherOtherInfo}>
       <View style={styles.infoWrapper}>
@@ -60,7 +54,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#3d3d3d",
     borderRadius: 18,
-    marginBottom: 40,
+    marginVertical: 30,
     alignItems: "center",
   },
   infoWrapperText: {

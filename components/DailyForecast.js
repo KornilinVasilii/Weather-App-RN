@@ -13,7 +13,7 @@ function DailyForecast({ weatherData }) {
         {weatherData &&
           weatherData.forecast.forecastday.map((item, index) => {
             let date = new Date(item.date);
-            let options = { weekday: "long" };
+            let options = { weekday: "short" };
             let dayName = date
               .toLocaleDateString("en-US", options)
               .split(",")[0];
@@ -22,17 +22,11 @@ function DailyForecast({ weatherData }) {
                 <Text style={{ color: "#fff", fontSize: 18 }}>{dayName}</Text>
                 <Image
                   style={{ height: 55, width: 55 }}
-                  source={{
-                    uri: "http://cdn.weatherapi.com/weather/64x64/day/116.png",
-                  }}
+                  source={require("../assets/clouds-and-sun.png")}
                 ></Image>
-                <Text style={{ color: "#fff", fontSize: 22 }}>
+                <Text style={{ color: "#fff", fontSize: 22, marginLeft: 6 }}>
                   {item.day.avgtemp_c.toFixed()}˚
                 </Text>
-
-                {/* <Text style={{ color: "#fff", fontSize: 18 }}>
-                  {item.day.condition.text}
-                </Text> */}
               </View>
             );
           })}

@@ -1,9 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SimpleLineIcons } from "@expo/vector-icons";
-import SearchWeather from "./SearchWeather";
 
 const CurrentWeather = ({ weatherData }) => {
+  // let date = new Date(weatherData.location.localtime);
+  // let options = {
+  //   day: "numeric",
+  //   month: "long",
+  //   weekday: "long",
+  // };
+  // let dayName = date.toLocaleDateString("en-US", options);
+
   return (
     <>
       <View style={styles.headerContainer}>
@@ -12,6 +19,7 @@ const CurrentWeather = ({ weatherData }) => {
           {weatherData && weatherData.location.name}
         </Text>
       </View>
+      {/* <Text style={styles.date}>{dayName}</Text> */}
       <View style={styles.currentWeather}>
         <Text style={styles.tempText}>
           {weatherData && weatherData.current.temp_c.toFixed()}&#xb0;
@@ -24,6 +32,11 @@ const CurrentWeather = ({ weatherData }) => {
   );
 };
 const styles = StyleSheet.create({
+  date: {
+    textAlign: "center",
+    marginTop: 12,
+    color: "#fff",
+  },
   location: {
     color: "#fff",
     fontSize: 25,
@@ -31,7 +44,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 10,
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
